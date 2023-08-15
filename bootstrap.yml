@@ -1,0 +1,36 @@
+---
+- name: Update cache on Ubuntu machines
+  hosts: all
+  become: true
+  pre_tasks:
+
+    # Task: Update package cache and upgrade packages on Ubuntu hosts
+    - name: Install updates
+      apt:
+        update_cache: yes
+        upgrade: dist
+      when: ansible_distribution == "Ubuntu"
+
+    # Task: Create an "ansible" user and add them to the "root" group
+    - name: create ansible user
+      user:
+        name: ansible
+        groups: root
+
+    # Task: Add SSH public key for Ansible authentication
+    - name: add ssh key for ansible
+      authorized_key:
+        user: ansible
+        key: "your-ssh-key"
+
+    # Task: Copy sudoers configuration file for Ansible user privileges
+    - name: add sudoers file for ansible
+      copy:
+        src: sudoer_ansible
+        dest: /etc/sudoers.d/ansible
+        owner: root
+        group: root
+        mode: 0440
+
+# Description: This playbook updates Ubuntu hosts, creates an "ansible" user,
+# adds an SSH public key for authentication, and configures sudo privileges for the user.
